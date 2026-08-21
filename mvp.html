@@ -49,17 +49,18 @@
     const {data:{session}}=await client.auth.getSession();
     if(!session){location.replace('acesso.html');return;}
     const {data:subscription}=await client.from('subscriptions').select('status').eq('user_id',session.user.id).maybeSingle();
-    // Enquanto a cobrança recorrente ainda está sendo conectada, contas criadas
-    // pela plataforma entram em acesso inicial. Assinaturas vencidas ou canceladas
-    // continuam sem acesso.
-    if(!subscription||!['active','inactive'].includes(subscription.status)){location.replace('acesso.html?status=assinatura');return;}
+    // Enquanto a cobrança recorrente ainda está sendo conectada, toda conta
+    // autenticada pode usar o acesso inicial. Apenas assinaturas vencidas ou
+    // canceladas permanecem bloqueadas.
+    const subscriptionStatus=subscription?.status||'inactive';
+    if(['past_due','cancelled'].includes(subscriptionStatus)){location.replace('acesso.html?status=assinatura');return;}
     const name=(session.user.user_metadata&&session.user.user_metadata.full_name)||session.user.email.split('@')[0];
     document.querySelectorAll('.account strong').forEach(el=>el.textContent='Olá, '+name+'!');
     const title=document.querySelector('#home h1');
     if(title) title.textContent='Olá, '+name.split(' ')[0]+'.';
     const heading=document.querySelector('#home .heading');
     if(heading&&!document.getElementById('access-start')){
-      const initial=subscription.status!=='active';
+      const initial=subscriptionStatus!=='active';
       const band=document.createElement('section');
       band.id='access-start';
       band.style.cssText='margin:0 0 18px;padding:20px 22px;border-radius:12px;background:linear-gradient(118deg,#123f32,#1b5b46);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:0 14px 26px #173d3020';
