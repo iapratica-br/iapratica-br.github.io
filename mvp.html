@@ -51,22 +51,20 @@
     const {data:{session}}=await client.auth.getSession();
     if(!session){location.replace('acesso.html');return;}
     const {data:subscription}=await client.from('subscriptions').select('status').eq('user_id',session.user.id).maybeSingle();
-    // Enquanto a cobrança recorrente ainda está sendo conectada, toda conta
-    // autenticada pode usar o acesso inicial. Apenas assinaturas vencidas ou
-    // canceladas permanecem bloqueadas.
     const subscriptionStatus=subscription?.status||'inactive';
-    if(['past_due','cancelled'].includes(subscriptionStatus)){location.replace('acesso.html?status=assinatura');return;}
+    // A ferramenta é exclusiva do Programa Completo com assinatura ativa.
+    // O e-book avulso continua sendo entregue pela área de membros da Kiwify.
+    if(subscriptionStatus!=='active'){location.replace('acesso.html?status=assinatura');return;}
     const name=(session.user.user_metadata&&session.user.user_metadata.full_name)||session.user.email.split('@')[0];
     document.querySelectorAll('.account strong').forEach(el=>el.textContent='Olá, '+name+'!');
     const title=document.querySelector('#home h1');
     if(title) title.textContent='Olá, '+name.split(' ')[0]+'.';
     const heading=document.querySelector('#home .heading');
     if(heading&&!document.getElementById('access-start')){
-      const initial=subscriptionStatus!=='active';
       const band=document.createElement('section');
       band.id='access-start';
       band.style.cssText='margin:0 0 18px;padding:20px 22px;border-radius:12px;background:linear-gradient(118deg,#123f32,#1b5b46);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:0 14px 26px #173d3020';
-      band.innerHTML=`<div><div style="font:700 10px DM Mono,monospace;letter-spacing:.12em;color:#d5ee70">${initial?'ACESSO INICIAL':'ASSINATURA ATIVA'}</div><strong style="display:block;margin:8px 0 4px;font:800 21px/1.12 Playfair Display,serif">${initial?'Seu espaço de crescimento está pronto.':'Seu negócio, organizado em um só lugar.'}</strong><span style="font-size:11px;color:#d7e9e1">${initial?'Comece pelo plano de ação e use as ferramentas no seu ritmo.':'Acompanhe a rotina, crie conteúdo e atenda com mais clareza.'}</span></div><button class="button" style="margin:0;white-space:nowrap" onclick="switchView('lessons')">COMEÇAR AGORA →</button>`;
+      band.innerHTML=`<div><div style="font:700 10px DM Mono,monospace;letter-spacing:.12em;color:#d5ee70">ASSINATURA ATIVA</div><strong style="display:block;margin:8px 0 4px;font:800 21px/1.12 Playfair Display,serif">Seu negócio, organizado em um só lugar.</strong><span style="font-size:11px;color:#d7e9e1">Acompanhe a rotina, crie conteúdo e atenda com mais clareza.</span></div><button class="button" style="margin:0;white-space:nowrap" onclick="switchView('lessons')">COMEÇAR AGORA →</button>`;
       heading.insertAdjacentElement('afterend',band);
       const style=document.createElement('style');
       style.textContent='.growth-hub{margin:28px 0 30px}.growth-hub h2{font:800 24px/1.1 Playfair Display,serif;margin:6px 0}.growth-hub p{color:#66756c;font-size:11px;line-height:1.6}.growth-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:15px}.growth-card{border:1px solid #dae2d7;background:#fffdf8;border-radius:11px;padding:17px;text-align:left}.growth-card b{display:block;font-size:12px;margin:11px 0 4px}.growth-card span{font:700 10px DM Mono,monospace;color:#104938;letter-spacing:.05em}.growth-card button{margin-top:10px;border:0;padding:0;background:none;color:#104938;font:800 10px Manrope;cursor:pointer}.weekly{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-top:16px}.weekly-main{background:#e7f0d5;border-radius:11px;padding:20px}.weekly-main ol{margin:13px 0 0;padding-left:18px;color:#425248;font-size:11px;line-height:2}.weekly-side{border:1px solid #dae2d7;background:#fffdf8;border-radius:11px;padding:20px}.weekly-side li{margin:8px 0;color:#526158;font-size:11px;line-height:1.45}@media(max-width:850px){.growth-grid{grid-template-columns:1fr 1fr}.weekly{grid-template-columns:1fr}}@media(max-width:490px){.growth-grid{grid-template-columns:1fr}}';
@@ -92,5 +90,30 @@
       const leads=JSON.parse(localStorage.getItem('iap_leads')||'[]');const saveLeads=()=>localStorage.setItem('iap_leads',JSON.stringify(leads));const renderLeads=()=>{const stages=['Novo contato','Em conversa','Proposta enviada','Retomar'];document.getElementById('pipeline-stats').innerHTML=stages.map(s=>`<div class="pipeline-stat"><span>${s.toUpperCase()}</span><b>${leads.filter(l=>l.stage===s).length}</b></div>`).join('');document.getElementById('lead-list').innerHTML=leads.length?leads.slice().reverse().map((l,i)=>`<div class="lead-row"><div><b>${safe(l.name)}</b><small>${safe(l.need)} · Próximo passo: ${safe(l.next||'definir')}</small></div><select onchange="window.updateLead(${leads.length-1-i},this.value)"><option ${l.stage==='Novo contato'?'selected':''}>Novo contato</option><option ${l.stage==='Em conversa'?'selected':''}>Em conversa</option><option ${l.stage==='Proposta enviada'?'selected':''}>Proposta enviada</option><option ${l.stage==='Retomar'?'selected':''}>Retomar</option><option ${l.stage==='Fechado'?'selected':''}>Fechado</option></select></div>`).join(''):'<div class="value-result">Ainda não há conversas registradas. Adicione o primeiro contato que precisa de acompanhamento.</div>'};window.updateLead=(index,stage)=>{leads[index].stage=stage;saveLeads();renderLeads()};document.getElementById('lead-form').onsubmit=e=>{e.preventDefault();leads.push({name:document.getElementById('lead-name').value.trim(),need:document.getElementById('lead-need').value.trim(),stage:document.getElementById('lead-stage').value,next:document.getElementById('lead-next').value.trim()});saveLeads();renderLeads();e.target.reset();notice('Contato adicionado ao funil.')};renderLeads();
     }
   })();
+  /* Suporte operacional: encaminha a solicitação para a caixa profissional. */
+  (function configurarSuporteReal(){
+    const suporte='contato.oficioia@outlook.com';
+    const modal=document.getElementById('support-modal');
+    if(!modal)return;
+    const texto=modal.querySelector('p');
+    if(texto)texto.innerHTML='Envie sua dúvida diretamente para a nossa equipe. Respondemos em até <strong>1 dia útil</strong>, de segunda a sexta-feira.';
+    const form=modal.querySelector('form');
+    const botao=form?.querySelector('button');
+    if(botao)botao.textContent='ABRIR E-MAIL DE SUPORTE →';
+    window.submitSupport=function(event){
+      event.preventDefault();
+      const mensagem=modal.querySelector('textarea')?.value.trim()||'';
+      const assunto=encodeURIComponent('Suporte | IA na Prática');
+      const corpo=encodeURIComponent('Olá, equipe IA na Prática.\n\nMinha dúvida é:\n'+mensagem+'\n\nObrigado!');
+      window.location.href='mailto:'+suporte+'?subject='+assunto+'&body='+corpo;
+      closeSupport();
+    };
+    const caixa=document.querySelector('.support');
+    if(caixa&&!document.getElementById('support-email')){
+      const email=document.createElement('a');
+      email.id='support-email';email.href='mailto:'+suporte;email.textContent=suporte;
+      email.style.cssText='display:block;margin-top:9px;color:#d5ee70;font-size:10px;word-break:break-word';
+      caixa.appendChild(email);
+    }
+  })();
 </script></body></html>
-
