@@ -25,11 +25,25 @@
   document.getElementById('date').textContent=new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'numeric',month:'long'}).format(new Date()).toUpperCase();
   function money(v){return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v)}
   function persist(){localStorage.setItem('iap_entries',JSON.stringify(state.entries));localStorage.setItem('iap_tasks',JSON.stringify(state.tasks))}
+  async function saveEntryOnline(entry){
+    const client=window.IAP_CLIENT,userId=window.IAP_USER_ID;
+    if(!client||!userId)return;
+    const {error}=await client.from('financial_entries').insert({user_id:userId,entry_type:entry.type,amount:entry.value,description:entry.name,entry_date:new Date().toISOString().slice(0,10)});
+    if(error)notice('O lançamento ficou salvo neste dispositivo. A sincronização será tentada novamente ao entrar.');
+  }
+  window.syncPlatformData=async function(){
+    const client=window.IAP_CLIENT,userId=window.IAP_USER_ID;
+    if(!client||!userId)return;
+    const {data,error}=await client.from('financial_entries').select('entry_type,amount,description,entry_date').eq('user_id',userId).order('entry_date',{ascending:false}).limit(200);
+    if(error||!data||!data.length)return;
+    state.entries=data.map(item=>({type:item.entry_type,value:Number(item.amount),name:item.description,date:new Intl.DateTimeFormat('pt-BR').format(new Date(item.entry_date+'T12:00:00'))}));
+    persist();renderEntries();
+  }
   function switchView(view){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));document.getElementById(view).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===view));window.scrollTo({top:0,behavior:'smooth'})}
   document.querySelectorAll('.nav button').forEach(x=>x.onclick=()=>switchView(x.dataset.view));
   function renderEntries(){const entries=state.entries;const income=entries.filter(x=>x.type==='income').reduce((a,x)=>a+x.value,0), expense=entries.filter(x=>x.type==='expense').reduce((a,x)=>a+x.value,0);document.getElementById('total-income').textContent=money(income);document.getElementById('total-expense').textContent=money(expense);document.getElementById('total-balance').textContent=money(income-expense);document.getElementById('stat-income').textContent=money(income);document.getElementById('stat-clients').textContent=entries.filter(x=>x.type==='income').length;const list=document.getElementById('entry-list');list.innerHTML=entries.length?entries.slice().reverse().map(x=>`<div class="row"><div><b>${safe(x.name)}</b><small>${x.date}</small></div><span class="${x.type==='income'?'income':'expense'}">${x.type==='income'?'+':'−'} ${money(x.value)}</span></div>`).join(''):'<div class="empty">Nenhum lançamento ainda. Comece registrando uma venda acima.</div>'}
   function safe(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
-  document.getElementById('finance-form').onsubmit=e=>{e.preventDefault();let raw=document.getElementById('entry-value').value.replace(/\./g,'').replace(',','.');let value=Number(raw);if(!value){notice('Digite um valor válido.');return}state.entries.push({type:document.getElementById('entry-type').value,value,name:document.getElementById('entry-name').value,date:new Intl.DateTimeFormat('pt-BR').format(new Date())});persist();renderEntries();e.target.reset();notice('Lançamento salvo no seu fluxo de caixa.');};
+  document.getElementById('finance-form').onsubmit=e=>{e.preventDefault();let raw=document.getElementById('entry-value').value.replace(/\./g,'').replace(',','.');let value=Number(raw);if(!value){notice('Digite um valor válido.');return}const entry={type:document.getElementById('entry-type').value,value,name:document.getElementById('entry-name').value,date:new Intl.DateTimeFormat('pt-BR').format(new Date())};state.entries.push(entry);persist();renderEntries();saveEntryOnline(entry);e.target.reset();notice('Lançamento salvo no seu fluxo de caixa.');};
   function clearEntries(){state.entries=[];persist();renderEntries();notice('Dados de teste removidos.');}
   function renderTasks(){const done=state.tasks.filter(Boolean).length;document.getElementById('stat-tasks').textContent=`${done}/4`;document.getElementById('progress-label').textContent=`${done} de 4 tarefas concluídas`;document.getElementById('progress-pct').textContent=`${done*25}%`;document.getElementById('progress').style.width=`${done*25}%`;document.getElementById('task-list').innerHTML=tasks.map((t,i)=>`<div class="task ${state.tasks[i]?'done':''}"><input id="task-${i}" type="checkbox" ${state.tasks[i]?'checked':''} onchange="toggleTask(${i})"><label for="task-${i}">${t[0]}<span>${t[1]}</span></label></div>`).join('')}
   function toggleTask(i){state.tasks[i]=!state.tasks[i];persist();renderTasks()}
@@ -55,6 +69,7 @@
     // A ferramenta é exclusiva do Programa Completo com assinatura ativa.
     // O e-book avulso continua sendo entregue pela área de membros da Kiwify.
     if(subscriptionStatus!=='active'){location.replace('acesso.html?status=assinatura');return;}
+    window.IAP_CLIENT=client;window.IAP_USER_ID=session.user.id;window.syncPlatformData?.();
     const name=(session.user.user_metadata&&session.user.user_metadata.full_name)||session.user.email.split('@')[0];
     document.querySelectorAll('.account strong').forEach(el=>el.textContent='Olá, '+name+'!');
     const title=document.querySelector('#home h1');
