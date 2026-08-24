@@ -65,7 +65,31 @@
     const {data:{session}}=await client.auth.getSession();
     if(!session){location.replace('acesso.html');return;}
     const {data:subscription}=await client.from('subscriptions').select('status').eq('user_id',session.user.id).maybeSingle();
-    const subscriptionStatus=subscription?.status||'inactive';
+    const subscriptionStatus=subscription?.status||'inactive';  <style id="mobile-navigation-fix">
+    @media (max-width:850px){
+      body{overflow-x:hidden;padding-bottom:76px}
+      .shell{display:block;min-width:0}
+      .sidebar{display:block;position:fixed;inset:auto 0 0 0;width:100%;height:auto;padding:7px 6px max(7px,env(safe-area-inset-bottom));z-index:50;background:linear-gradient(180deg,#0e4032 0%,#0a3127 100%);box-shadow:0 -8px 24px rgba(10,49,39,.22)}
+      .sidebar .brand,.sidebar .side-label,.sidebar .support{display:none}
+      .sidebar .nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px}
+      .sidebar .nav button{min-width:0;min-height:55px;padding:6px 2px;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;font-size:9px;line-height:1.15;border-radius:8px;white-space:normal}
+      .sidebar .nav .ico{width:auto;font-size:17px;line-height:1}
+      .page{width:100%;min-width:0;padding:20px 16px 32px}
+      .topbar{gap:10px;align-items:flex-start}.topbar .date{max-width:58%;line-height:1.45}
+      .heading,.panel-head{margin-top:28px}.heading{align-items:flex-start;gap:12px}.heading .month{padding-top:5px;white-space:nowrap}
+      .box,.stat,.action-plan,.assistant,.value-tool{min-width:0}.row,.balance{overflow-wrap:anywhere}
+      input,select,textarea,button{max-width:100%}
+      .notice{left:14px;right:14px;bottom:88px;max-width:none}.modal-bg{padding:14px 14px 88px}
+    }
+    @media (max-width:490px){
+      .sidebar .nav button{font-size:8px}.page{padding-left:13px;padding-right:13px}.topbar .date{font-size:8px}
+      .heading{display:block}.heading .month{display:block;margin-top:12px}
+      .section-title{gap:10px;align-items:flex-start}.section-title h2{font-size:18px}
+      .box,.value-tool{padding:18px 15px}
+      .balance{display:flex;align-items:center;justify-content:space-between;gap:12px}.balance strong{float:none;flex:0 0 auto}
+    }
+  </style>
+</head>
     // A ferramenta é exclusiva do Programa Completo com assinatura ativa.
     // O e-book avulso continua sendo entregue pela área de membros da Kiwify.
     if(subscriptionStatus!=='active'){location.replace('acesso.html?status=assinatura');return;}
