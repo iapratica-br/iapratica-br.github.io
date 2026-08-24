@@ -3,5 +3,5 @@
 window.IAP_CONFIG = {
   supabaseUrl: 'https://ijzcyhvhiupoykvshrev.supabase.co',
   supabaseAnonKey: 'sb_publishable_urSkCjL_gp2r4EZz9-_uFg_fogz5hWx',
-  appUrl: 'mvp.html'
+  appUrl: 'mvp.html?v=20260824-2003'
 };
