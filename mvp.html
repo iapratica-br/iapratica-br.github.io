@@ -8,16 +8,57 @@
     /* Sistema visual: mais próximo de um painel de gestão B2B. */
     body,button,input,select,textarea{font-family:'Plus Jakarta Sans',Arial,sans-serif}h1,h2,h3,.action-plan h2,.modal h2{font-family:'Plus Jakarta Sans',Arial,sans-serif;font-style:normal;letter-spacing:-.055em}.sidebar{background:linear-gradient(180deg,#0e4032 0%,#0a3127 100%)}.page{padding-top:34px}.topbar{padding-bottom:16px;border-bottom:1px solid #e1e8de}.heading{margin-top:40px}.stat,.box{box-shadow:0 8px 20px rgba(23,37,31,.035)}.stat{border-color:#e0e7dd}.stat strong{font-size:27px}.quick{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}.quick:hover{box-shadow:0 12px 22px rgba(16,73,56,.08)}.growth-card{transition:transform .18s ease,box-shadow .18s ease}.growth-card:hover{transform:translateY(-3px);box-shadow:0 14px 24px rgba(16,73,56,.08)}
   </style>
+  <style id="mobile-navigation-fix">
+    @media (max-width:850px){
+      body{overflow-x:hidden;padding-bottom:76px}
+      .shell{display:block;min-width:0}
+      .sidebar{display:block;position:fixed;inset:auto 0 0 0;width:100%;height:auto;padding:7px 6px max(7px,env(safe-area-inset-bottom));z-index:50;background:linear-gradient(180deg,#0e4032 0%,#0a3127 100%);box-shadow:0 -8px 24px rgba(10,49,39,.22)}
+      .sidebar .brand,.sidebar .side-label,.sidebar .support{display:none}
+      .sidebar .nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px}
+      .sidebar .nav button{min-width:0;min-height:55px;padding:6px 2px;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;font-size:9px;line-height:1.15;border-radius:8px;white-space:normal}
+      .sidebar .nav .ico{width:auto;font-size:17px;line-height:1}
+      .page{width:100%;min-width:0;padding:20px 16px 32px}
+      .topbar{gap:10px;align-items:flex-start}
+      .topbar .date{max-width:58%;line-height:1.45}
+      .heading,.panel-head{margin-top:28px}
+      .heading{align-items:flex-start;gap:12px}
+      .heading .month{padding-top:5px;white-space:nowrap}
+      .box,.stat,.action-plan,.assistant,.value-tool{min-width:0}
+      .row,.balance{overflow-wrap:anywhere}
+      input,select,textarea,button{max-width:100%}
+      .notice{left:14px;right:14px;bottom:88px;max-width:none}
+      .modal-bg{padding:14px 14px 88px}
+    }
+    @media (max-width:490px){
+      .sidebar .nav button{font-size:8px}
+      .page{padding-left:13px;padding-right:13px}
+      .topbar .date{font-size:8px}
+      .heading{display:block}
+      .heading .month{display:block;margin-top:12px}
+      .section-title{gap:10px;align-items:flex-start}
+      .section-title h2{font-size:18px}
+      .box{padding:18px 15px}
+      .value-tool{padding:18px 15px}
+      .balance{display:flex;align-items:center;justify-content:space-between;gap:12px}
+      .balance strong{float:none;flex:0 0 auto}
+    }
+  </style>
 </head>
 <body>
-<div class="shell"><aside class="sidebar"><div class="brand"><span class="mark">✦</span> IA na Prática</div><div class="side-label">SEU ESPAÇO</div><nav class="nav"><button class="active" data-view="home"><span class="ico">⌂</span>Visão geral</button><button data-view="finance"><span class="ico">⌁</span>Finanças</button><button data-view="marketing"><span class="ico">✳</span>Marketing</button><button data-view="service"><span class="ico">↗</span>Atendimento</button><button data-view="lessons"><span class="ico">▣</span>Materiais e aulas</button></nav><div class="support"><strong>Precisa de ajuda?</strong>Fale com a equipe de suporte sempre que precisar.<button onclick="openSupport()">ABRIR SUPORTE →</button></div></aside>
-<main class="page"><div class="topbar"><span class="date" id="date"></span><div class="accouplatform-config.js?v=20260824-2003nt"><strong>Olá, Ana! 👋</strong><span class="avatar">AS</span></div></div>
-  <section class="view active" id="home"><div class="heading"><div><div class="eyebrow">Seu negócio em movimento</div><h1>Bom dia, Ana.</h1><p class="sub">Aqui está o que merece sua atenção hoje.</p></div><span class="month">AGOSTO / 2026</span></div><div class="stats"><article class="stat"><small>ENTRADAS DO MÊS</small><strong id="stat-income">R$ 0,00</strong><span class="trend">Registre suas vendas →</span></article><article class="stat"><small>CLIENTES ATENDIDOS</small><strong id="stat-clients">0</strong><span class="trend">Conte cada nova venda</span></article><article class="stat"><small>TAREFAS CONCLUÍDAS</small><strong id="stat-tasks">0/4</strong><span class="trend">Sua rotina em andamento</span></article></div><div class="grid-two"><section class="action-plan"><div class="eyebrow" style="color:#d5ee70">SEU PLANO DE AÇÃO</div><h2>Pequenos passos para uma semana mais leve.</h2><div class="progress"><i id="progress"></i></div><div class="progress-row"><span id="progress-label">0 de 4 tarefas concluídas</span><span id="progress-pct">0%</span></div><button class="button" onclick="switchView('lessons')">VER MINHAS TAREFAS →</button></section><aside class="assistant"><div class="spark">✦</div><h3>Seus modelos estão prontos.</h3><p>Crie uma ideia de post, organize uma resposta ou descubra por onde começar.</p><button class="text-button" onclick="switchView('marketing')">ABRIR MODELOS →</button></aside></div><div class="section-title"><h2>Suas ferramentas</h2><button class="text-link" onclick="switchView('finance')">VER TODAS →</button></div><div class="quick-tools"><button class="quick box" onclick="switchView('finance')"><div class="tool-icon">⌁</div><h3>Fluxo de caixa</h3><p>Registre entradas e despesas em poucos cliques.</p></button><button class="quick box" onclick="switchView('marketing')"><div class="tool-icon">✳</div><h3>Gerador de posts</h3><p>Conteúdo com a voz do seu negócio.</p></button><button class="quick box" onclick="switchView('service')"><div class="tool-icon">▣</div><h3>Orçamentos rápidos</h3><p>Respostas profissionais para o WhatsApp.</p></button><button class="quick box" onclick="switchView('lessons')"><div class="tool-icon">↗</div><h3>Plano de ação</h3><p>Priorize o que muda sua rotina agora.</p></button></div></section>
+<div class="shell"><aside class="sidebar"><div class="brand"><span class="mark">✦</span> IA na Prática</div><div class="side-label">SEU ESPAÇO</div><nav class="nav"><button class="active" data-view="home"><span class="ico">⌂</span>Visão geral</button><button data-view="finance"><span class="ico">⌁</span>Finanças</button><button data-view="marketing"><span class="ico">✳</span>Marketing</button><button data-view="service"><span class="ico">↗</span>Atendimento</button><button data-view="lessons"><span class="ico">▣</span>Materiais e aulas</button></nav><div class="support"><strong>Precisa de ajuda?</strong>Fale com a sua consultora sempre que travar.<button onclick="openSupport()">ABRIR SUPORTE →</button></div></aside>
+<main class="page"><div class="topbar"><span class="date" id="date"></span><div class="account"><strong>Olá! 👋</strong><span class="avatar">IA</span></div></div>
+  <section class="view active" id="home"><div class="heading"><div><div class="eyebrow">Seu negócio em movimento</div><h1>Bom dia, Ana.</h1><p class="sub">Aqui está o que merece sua atenção hoje.</p></div><span class="month">AGOSTO / 2026</span></div><div class="stats"><article class="stat"><small>ENTRADAS DO MÊS</small><strong id="stat-income">R$ 0,00</strong><span class="trend">Registre suas vendas →</span></article><article class="stat"><small>CLIENTES ATENDIDOS</small><strong id="stat-clients">0</strong><span class="trend">Conte cada nova venda</span></article><article class="stat"><small>TAREFAS CONCLUÍDAS</small><strong id="stat-tasks">0/4</strong><span class="trend">Sua rotina em andamento</span></article></div><div class="grid-two"><section class="action-plan"><div class="eyebrow" style="color:#d5ee70">SEU PLANO DE AÇÃO</div><h2>Pequenos passos para uma semana mais leve.</h2><div class="progress"><i id="progress"></i></div><div class="progress-row"><span id="progress-label">0 de 4 tarefas concluídas</span><span id="progress-pct">0%</span></div><button class="button" onclick="switchView('lessons')">VER MINHAS TAREFAS →</button></section><aside class="assistant"><div class="spark">✦</div><h3>Sua assistente está pronta.</h3><p>Crie uma ideia de post, organize uma resposta ou descubra por onde começar.</p><button class="text-button" onclick="switchView('marketing')">ABRIR ASSISTENTE →</button></aside></div><div class="section-title"><h2>Suas ferramentas</h2><button class="text-link" onclick="switchView('finance')">VER TODAS →</button></div><div class="quick-tools"><button class="quick box" onclick="switchView('finance')"><div class="tool-icon">⌁</div><h3>Fluxo de caixa</h3><p>Registre entradas e despesas em poucos cliques.</p></button><button class="quick box" onclick="switchView('marketing')"><div class="tool-icon">✳</div><h3>Gerador de posts</h3><p>Conteúdo com a voz do seu negócio.</p></button><button class="quick box" onclick="switchView('service')"><div class="tool-icon">▣</div><h3>Orçamentos rápidos</h3><p>Respostas profissionais para o WhatsApp.</p></button><button class="quick box" onclick="switchView('lessons')"><div class="tool-icon">↗</div><h3>Plano de ação</h3><p>Priorize o que muda sua rotina agora.</p></button></div></section>
   <section class="view" id="finance"><div class="panel-head"><div class="eyebrow">Financeiro simples</div><h1>Seu dinheiro, mais claro.</h1><p class="sub">Registre o básico. A visão do mês aparece para você.</p></div><div class="tool-grid"><section class="box"><h2>Novo lançamento</h2><p class="description">Anote uma entrada ou despesa do seu negócio.</p><form id="finance-form" class="form-grid"><label>Tipo<select id="entry-type"><option value="income">Entrada / venda</option><option value="expense">Despesa</option></select></label><label>Valor (R$)<input id="entry-value" required inputmode="decimal" placeholder="Ex.: 150,00"></label><label class="full">Descrição<input id="entry-name" required placeholder="Ex.: Venda para Maria"></label><button class="primary full">Salvar lançamento</button></form></section><section class="box"><h2>Resumo do mês</h2><p class="description">O que entrou, saiu e sobrou no período.</p><div class="balance">Entradas <strong id="total-income">R$ 0,00</strong></div><div class="balance" style="background:#fff0eb;margin-top:8px">Despesas <strong id="total-expense">R$ 0,00</strong></div><div class="balance" style="background:#e8f2bf;margin-top:8px">Saldo estimado <strong id="total-balance">R$ 0,00</strong></div></section></div><div class="section-title"><h2>Lançamentos recentes</h2><button class="text-link" onclick="clearEntries()">LIMPAR DADOS DE TESTE</button></div><div class="box rows" id="entry-list"><div class="empty">Nenhum lançamento ainda. Comece registrando uma venda acima.</div></div></section>
   <section class="view" id="marketing"><div class="panel-head"><div class="eyebrow">Marketing sem bloqueio criativo</div><h1>Conteúdo que soa como você.</h1><p class="sub">Dê um contexto simples e saia com uma ideia pronta para adaptar e publicar.</p></div><div class="tool-grid"><section class="box"><h2>Crie seu próximo post</h2><p class="description">Não é uma promessa de alcance: é um ponto de partida útil, feito para seu cliente.</p><form id="content-form" class="form-grid"><label>Seu tipo de negócio<input id="business" required placeholder="Ex.: salão de beleza"></label><label>Objetivo<select id="goal"><option value="vender">Divulgar uma oferta</option><option value="relacionar">Criar relacionamento</option><option value="explicar">Explicar um serviço</option></select></label><label class="full">Sobre o que quer falar?<textarea id="topic" required placeholder="Ex.: hidratação para cabelo ressecado"></textarea></label><button class="primary full">GERAR IDEIA DE POST →</button></form></section><section class="box"><h2>Sua sugestão</h2><p class="description">Edite no seu tom antes de publicar.</p><div id="content-result" class="empty">Preencha o formulário e sua sugestão aparecerá aqui.</div><button id="copy-post" class="secondary hidden" style="margin-top:12px" onclick="copyPost()">COPIAR TEXTO</button></section></div></section>
   <section class="view" id="service"><div class="panel-head"><div class="eyebrow">Atendimento ágil</div><h1>Responda bem, sem reescrever tudo.</h1><p class="sub">Use os textos abaixo como base e adapte para cada conversa.</p></div><div class="tool-grid"><section class="box"><h2>Respostas que salvam tempo</h2><p class="description">Textos humanizados para os momentos mais comuns do atendimento.</p><div id="message-list"></div></section><section class="box"><h2>Monte uma resposta</h2><p class="description">Escolha uma situação e personalize o texto para o seu negócio.</p><form id="reply-form" class="form-grid"><label>Situação<select id="reply-type"><option value="welcome">Primeiro contato</option><option value="price">Pedido de preço</option><option value="followup">Cliente sumiu</option></select></label><label>Nome do cliente<input id="client-name" placeholder="Ex.: Joana"></label><label class="full">Detalhe importante<textarea id="reply-detail" placeholder="Ex.: serviço de corte e escova por R$ 90"></textarea></label><button class="primary full">CRIAR RESPOSTA →</button></form><div id="reply-result" class="content-result hidden"></div><button id="copy-reply" class="secondary hidden" style="margin-top:12px" onclick="copyReply()">COPIAR RESPOSTA</button></section></div></section>
   <section class="view" id="lessons"><div class="panel-head"><div class="eyebrow">Sua trilha de evolução</div><h1>Uma mudança por vez.</h1><p class="sub">Conclua os passos da semana. O seu painel acompanha o progresso.</p></div><div class="tool-grid"><section class="box"><h2>Plano desta semana</h2><p class="description">Atividades curtas para aplicar no negócio de verdade.</p><div class="task-list" id="task-list"></div></section><section class="box"><h2>Aulas e materiais</h2><p class="description">O conteúdo que acompanha a sua assinatura.</p><div class="lesson"><i>01</i><div><b>Separando seu dinheiro pessoal do negócio</b><span>Vídeo · 12 min</span></div></div><div class="lesson"><i>02</i><div><b>Como pedir posts úteis para a IA</b><span>Vídeo + prompt · 18 min</span></div></div><div class="lesson"><i>03</i><div><b>Respostas que aumentam a confiança</b><span>Modelo prático · 8 min</span></div></div><div class="lesson"><i>04</i><div><b>Seu primeiro atendimento automatizado</b><span>Guia passo a passo · 15 min</span></div></div></section></div></section>
 </main></div>
+<script>
+  // Evita exibir um nome fictício enquanto os dados reais da conta são carregados.
+  document.querySelectorAll('.account strong').forEach(el=>el.textContent='Olá! 👋');
+  const initialTitle=document.querySelector('#home h1');if(initialTitle)initialTitle.textContent='Bom dia.';
+  const initialAvatar=document.querySelector('.avatar');if(initialAvatar)initialAvatar.textContent='IA';
+</script>
 <div class="modal-bg" id="support-modal"><div class="modal"><div class="modal-top"><div><div class="eyebrow">Suporte da assinatura</div><h2>Como podemos ajudar?</h2></div><button class="close" onclick="closeSupport()">×</button></div><p>Na versão publicada, esta etapa será ligada ao seu WhatsApp, e-mail ou central de suporte. Por enquanto, podemos registrar a solicitação no painel.</p><form onsubmit="submitSupport(event)" class="form-grid"><label class="full">Escreva sua dúvida<textarea required placeholder="Ex.: não sei como organizar as despesas do mês"></textarea></label><button class="primary full">ENVIAR PEDIDO</button></form></div></div><div class="notice" id="notice"></div>
 <script>
   const state={entries:JSON.parse(localStorage.getItem('iap_entries')||'[]'),tasks:JSON.parse(localStorage.getItem('iap_tasks')||'[false,false,false,false]')};
@@ -55,8 +96,7 @@
   function copyReply(){navigator.clipboard.writeText(document.getElementById('reply-result').textContent);notice('Resposta copiada.');}function openSupport(){document.getElementById('support-modal').classList.add('open')}function closeSupport(){document.getElementById('support-modal').classList.remove('open')}function submitSupport(e){e.preventDefault();closeSupport();notice('Pedido registrado. Na versão online, ele chegará à sua equipe de suporte.');}function notice(t){let n=document.getElementById('notice');n.textContent=t;n.classList.add('show');setTimeout(()=>n.classList.remove('show'),3300)}renderEntries();renderTasks();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="const metadata=session.user.user_metadata||{};
-    const name=metadata.full_name||metadata.name||metadata.display_name||session.user.email.split('@')[0];"></script>
+<script src="platform-config.js?v=20260824-2003"></script>
 <script>
   // Quando a configuração pública for adicionada, esta tela deixa de aceitar acesso anônimo.
   (async()=>{
@@ -66,45 +106,18 @@
     const {data:{session}}=await client.auth.getSession();
     if(!session){location.replace('acesso.html');return;}
     const {data:subscription}=await client.from('subscriptions').select('status').eq('user_id',session.user.id).maybeSingle();
-    const subscriptionStatus=subscription?.status||'inactive';  <style id="mobile-navigation-fix">
-    @media (max-width:850px){
-      body{overflow-x:hidden;padding-bottom:76px}
-      .shell{display:block;min-width:0}
-      .sidebar{display:block;position:fixed;inset:auto 0 0 0;width:100%;height:auto;padding:7px 6px max(7px,env(safe-area-inset-bottom));z-index:50;background:linear-gradient(180deg,#0e4032 0%,#0a3127 100%);box-shadow:0 -8px 24px rgba(10,49,39,.22)}
-      .sidebar .brand,.sidebar .side-label,.sidebar .support{display:none}
-      .sidebar .nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px}
-      .sidebar .nav button{min-width:0;min-height:55px;padding:6px 2px;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;font-size:9px;line-height:1.15;border-radius:8px;white-space:normal}
-      .sidebar .nav .ico{width:auto;font-size:17px;line-height:1}
-      .page{width:100%;min-width:0;padding:20px 16px 32px}
-      .topbar{gap:10px;align-items:flex-start}.topbar .date{max-width:58%;line-height:1.45}
-      .heading,.panel-head{margin-top:28px}.heading{align-items:flex-start;gap:12px}.heading .month{padding-top:5px;white-space:nowrap}
-      .box,.stat,.action-plan,.assistant,.value-tool{min-width:0}.row,.balance{overflow-wrap:anywhere}
-      input,select,textarea,button{max-width:100%}
-      .notice{left:14px;right:14px;bottom:88px;max-width:none}.modal-bg{padding:14px 14px 88px}
-    }
-    @media (max-width:490px){
-      .sidebar .nav button{font-size:8px}.page{padding-left:13px;padding-right:13px}.topbar .date{font-size:8px}
-      .heading{display:block}.heading .month{display:block;margin-top:12px}
-      .section-title{gap:10px;align-items:flex-start}.section-title h2{font-size:18px}
-      .box,.value-tool{padding:18px 15px}
-      .balance{display:flex;align-items:center;justify-content:space-between;gap:12px}.balance strong{float:none;flex:0 0 auto}
-    }
-  </style>
-</head>
+    const subscriptionStatus=subscription?.status||'inactive';
     // A ferramenta é exclusiva do Programa Completo com assinatura ativa.
     // O e-book avulso continua sendo entregue pela área de membros da Kiwify.
     if(subscriptionStatus!=='active'){location.replace('acesso.html?status=assinatura');return;}
     window.IAP_CLIENT=client;window.IAP_USER_ID=session.user.id;window.syncPlatformData?.();
-    document.querySelectorAll('.account strong').forEach(el=>el.textContent='Olá, '+name+'!');
-    const initials=name.trim().split(/\s+/).slice(0,2).map(part=>part[0]||'').join('').toUpperCase()||'IA';
+    const metadata=session.user.user_metadata||{};
+    const savedName=(metadata.full_name||metadata.name||metadata.display_name||'').trim();
+    const name=/^ana$/i.test(savedName)?'':savedName;
+    document.querySelectorAll('.account strong').forEach(el=>el.textContent=name?'Olá, '+name+'!':'Olá!');
+    const homeTitle=document.querySelector('#home h1');if(homeTitle)homeTitle.textContent=name?'Bom dia, '+name+'.':'Bom dia.';
+    const initials=name?name.split(/\s+/).slice(0,2).map(part=>part[0]||'').join('').toUpperCase():'IA';
     const avatar=document.querySelector('.avatar');if(avatar)avatar.textContent=initials;
-    </main></div>
-<script>
-  // Evita exibir um nome fictício enquanto os dados reais da conta são carregados.
-  document.querySelectorAll('.account strong').forEach(el=>el.textContent='Olá! 👋');
-  const initialTitle=document.querySelector('#home h1');if(initialTitle)initialTitle.textContent='Bom dia.';
-  const initialAvatar=document.querySelector('.avatar');if(initialAvatar)initialAvatar.textContent='IA';
-</script>
     const title=document.querySelector('#home h1');
     if(title) title.textContent='Olá, '+name.split(' ')[0]+'.';
     const heading=document.querySelector('#home .heading');
@@ -164,4 +177,4 @@
       caixa.appendChild(email);
     }
   })();
-</script><script src="sync-state.js"></script><script src="analytics.js"></script></body></html>
+</script></body></html>
