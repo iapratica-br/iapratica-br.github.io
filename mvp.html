@@ -113,13 +113,11 @@
     window.IAP_CLIENT=client;window.IAP_USER_ID=session.user.id;window.syncPlatformData?.();
     const metadata=session.user.user_metadata||{};
     const savedName=(metadata.full_name||metadata.name||metadata.display_name||'').trim();
-    const name=/^ana$/i.test(savedName)?'':savedName;
+    const name=/[A-Za-zÀ-ÿ]{2}/.test(savedName)&&!/^ana$/i.test(savedName)?savedName:'';
     document.querySelectorAll('.account strong').forEach(el=>el.textContent=name?'Olá, '+name+'!':'Olá!');
     const homeTitle=document.querySelector('#home h1');if(homeTitle)homeTitle.textContent=name?'Bom dia, '+name+'.':'Bom dia.';
     const initials=name?name.split(/\s+/).slice(0,2).map(part=>part[0]||'').join('').toUpperCase():'IA';
     const avatar=document.querySelector('.avatar');if(avatar)avatar.textContent=initials;
-    const title=document.querySelector('#home h1');
-    if(title) title.textContent='Olá, '+name.split(' ')[0]+'.';
     const heading=document.querySelector('#home .heading');
     if(heading&&!document.getElementById('access-start')){
       const band=document.createElement('section');
