@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://iapratica-br.github.io/sitemap.xml
