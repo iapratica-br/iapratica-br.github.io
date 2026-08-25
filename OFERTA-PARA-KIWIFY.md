@@ -4,6 +4,7 @@
 
 **Tipo de pagamento:** pagamento único  
 **Preço:** R$ 39,99  
+**Benefício informado:** 69% de desconto; economia de R$ 89,91  
 **Formato de entrega:** produto digital / área de membros Kiwify ou entrega externa
 
 ### Título
@@ -40,6 +41,7 @@ Este é um material educativo e de organização. Ele não substitui orientaçã
 
 **Tipo de pagamento:** assinatura recorrente mensal  
 **Entrada:** R$ 89,99, incluindo o e-book e 30 dias de plataforma  
+**Benefício informado:** 50% de desconto; economia de R$ 90,00  
 **Renovação:** R$ 24,90 por mês, automática até o cancelamento  
 **Formato de entrega:** área de membros externa
 
