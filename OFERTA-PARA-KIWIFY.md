@@ -39,8 +39,7 @@ Este é um material educativo e de organização. Ele não substitui orientaçã
 ## Produto 2 — IA na Prática | Plataforma de Assinatura
 
 **Tipo de pagamento:** assinatura recorrente mensal  
-**Preço regular:** R$ 179,99  
-**Oferta de lançamento:** R$ 89,99 (50% OFF; economia de R$ 90,00), incluindo o e-book e 30 dias de plataforma  
+**Entrada:** R$ 89,99, incluindo o e-book e 30 dias de plataforma  
 **Renovação:** R$ 24,90 por mês, automática até o cancelamento  
 **Formato de entrega:** área de membros externa
 
