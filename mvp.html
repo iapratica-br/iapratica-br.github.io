@@ -78,7 +78,7 @@
     if(!client||!userId)return;
     const [{data:entries},{data:remoteTasks}]=await Promise.all([client.from('financial_entries').select('entry_type,amount,description,entry_date').eq('user_id',userId).order('entry_date',{ascending:false}).limit(200),client.from('tasks').select('id,title,description,completed').eq('user_id',userId).order('created_at')]);
     if(entries?.length)state.entries=entries.map(item=>({type:item.entry_type,value:Number(item.amount),name:item.description,date:new Intl.DateTimeFormat('pt-BR').format(new Date(item.entry_date+'T12:00:00'))}));
-    if(remoteTasks?.length)state.tasks=tasks.map((task,index)=>remoteTasks[index]?.completed||false);
+    if(remoteTasks?.length)state.tasks=tasks.map(task=>remoteTasks.find(item=>item.title===task[0])?.completed||false);
     else await client.from('tasks').insert(tasks.map((task,index)=>({user_id:userId,title:task[0],description:task[1],completed:state.tasks[index]})));
     persist();renderEntries();renderTasks();
   }
