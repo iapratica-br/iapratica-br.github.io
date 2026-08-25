@@ -76,10 +76,11 @@
   window.syncPlatformData=async function(){
     const client=window.IAP_CLIENT,userId=window.IAP_USER_ID;
     if(!client||!userId)return;
-    const {data,error}=await client.from('financial_entries').select('entry_type,amount,description,entry_date').eq('user_id',userId).order('entry_date',{ascending:false}).limit(200);
-    if(error||!data||!data.length)return;
-    state.entries=data.map(item=>({type:item.entry_type,value:Number(item.amount),name:item.description,date:new Intl.DateTimeFormat('pt-BR').format(new Date(item.entry_date+'T12:00:00'))}));
-    persist();renderEntries();
+    const [{data:entries},{data:remoteTasks}]=await Promise.all([client.from('financial_entries').select('entry_type,amount,description,entry_date').eq('user_id',userId).order('entry_date',{ascending:false}).limit(200),client.from('tasks').select('id,title,description,completed').eq('user_id',userId).order('created_at')]);
+    if(entries?.length)state.entries=entries.map(item=>({type:item.entry_type,value:Number(item.amount),name:item.description,date:new Intl.DateTimeFormat('pt-BR').format(new Date(item.entry_date+'T12:00:00'))}));
+    if(remoteTasks?.length)state.tasks=tasks.map((task,index)=>remoteTasks[index]?.completed||false);
+    else await client.from('tasks').insert(tasks.map((task,index)=>({user_id:userId,title:task[0],description:task[1],completed:state.tasks[index]})));
+    persist();renderEntries();renderTasks();
   }
   function switchView(view){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));document.getElementById(view).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===view));window.scrollTo({top:0,behavior:'smooth'})}
   document.querySelectorAll('.nav button').forEach(x=>x.onclick=()=>switchView(x.dataset.view));
@@ -88,7 +89,7 @@
   document.getElementById('finance-form').onsubmit=e=>{e.preventDefault();let raw=document.getElementById('entry-value').value.replace(/\./g,'').replace(',','.');let value=Number(raw);if(!value){notice('Digite um valor válido.');return}const entry={type:document.getElementById('entry-type').value,value,name:document.getElementById('entry-name').value,date:new Intl.DateTimeFormat('pt-BR').format(new Date())};state.entries.push(entry);persist();renderEntries();saveEntryOnline(entry);e.target.reset();notice('Lançamento salvo no seu fluxo de caixa.');};
   function clearEntries(){state.entries=[];persist();renderEntries();notice('Dados de teste removidos.');}
   function renderTasks(){const done=state.tasks.filter(Boolean).length;document.getElementById('stat-tasks').textContent=`${done}/4`;document.getElementById('progress-label').textContent=`${done} de 4 tarefas concluídas`;document.getElementById('progress-pct').textContent=`${done*25}%`;document.getElementById('progress').style.width=`${done*25}%`;document.getElementById('task-list').innerHTML=tasks.map((t,i)=>`<div class="task ${state.tasks[i]?'done':''}"><input id="task-${i}" type="checkbox" ${state.tasks[i]?'checked':''} onchange="toggleTask(${i})"><label for="task-${i}">${t[0]}<span>${t[1]}</span></label></div>`).join('')}
-  function toggleTask(i){state.tasks[i]=!state.tasks[i];persist();renderTasks()}
+  async function toggleTask(i){state.tasks[i]=!state.tasks[i];persist();renderTasks();const client=window.IAP_CLIENT,userId=window.IAP_USER_ID;if(client&&userId)await client.from('tasks').update({completed:state.tasks[i]}).eq('user_id',userId).eq('title',tasks[i][0])}
   document.getElementById('content-form').onsubmit=e=>{e.preventDefault();let b=document.getElementById('business').value.trim(),topic=document.getElementById('topic').value.trim(),goal=document.getElementById('goal').value;let type={vender:'Uma forma simples de convidar a pessoa a conhecer seu trabalho.',relacionar:'Uma conversa que aproxima sem forçar uma venda.',explicar:'Um conteúdo claro para mostrar o valor do que você faz.'}[goal];let text=`IDEIA PARA ${b.toUpperCase()}\n\nGancho: “Você também sente que ${topic.toLowerCase()} pode ser mais simples?”\n\nLegenda:\nQuem procura ${topic.toLowerCase()} não quer complicação. Quer confiança, cuidado e alguém que entenda o que precisa. Aqui no(a) ${b}, a gente acredita em fazer o básico muito bem — com atenção de verdade em cada detalhe.\n\n${type}\n\nChamada final: Me mande uma mensagem e eu te explico como funciona.\n\n#pequenonegocio #empreendedorismo #${b.replace(/\s/g,'').toLowerCase()}`;document.getElementById('content-result').textContent=text;document.getElementById('content-result').className='content-result';document.getElementById('copy-post').classList.remove('hidden');notice('Post criado. Ajuste o texto para ficar ainda mais seu.');};
   function marketingPrompt(goal,topic){document.getElementById('goal').value=goal;document.getElementById('topic').value=topic;document.getElementById('business').focus();notice('Modelo escolhido. Informe seu negócio e ajuste o tema.');}
   function copyPost(){navigator.clipboard.writeText(document.getElementById('content-result').textContent);notice('Texto copiado.');}
@@ -107,19 +108,20 @@
     const client=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
     const {data:{session}}=await client.auth.getSession();
     if(!session){location.replace('acesso.html');return;}
-    const {data:subscription}=await client.from('subscriptions').select('status').eq('user_id',session.user.id).maybeSingle();
+    const [{data:subscription},{data:profile}]=await Promise.all([client.from('subscriptions').select('status').eq('user_id',session.user.id).maybeSingle(),client.from('profiles').select('full_name,business_name').eq('id',session.user.id).maybeSingle()]);
     const subscriptionStatus=subscription?.status||'inactive';
     // A ferramenta é exclusiva do Programa Completo com assinatura ativa.
     // O e-book avulso continua sendo entregue pela área de membros da Kiwify.
     if(subscriptionStatus!=='active'){location.replace('acesso.html?status=assinatura');return;}
     window.IAP_CLIENT=client;window.IAP_USER_ID=session.user.id;window.syncPlatformData?.();
     const metadata=session.user.user_metadata||{};
-    const savedName=(metadata.full_name||metadata.name||metadata.display_name||'').trim();
+    const savedName=(profile?.full_name||metadata.full_name||metadata.name||metadata.display_name||session.user.email?.split('@')[0]||'').trim();
     const name=/[A-Za-zÀ-ÿ]{2}/.test(savedName)&&!/^ana$/i.test(savedName)?savedName:'';
     document.querySelectorAll('.account strong').forEach(el=>el.textContent=name?'Olá, '+name+'!':'Olá!');
     const homeTitle=document.querySelector('#home h1');if(homeTitle)homeTitle.textContent=name?'Bom dia, '+name+'.':'Bom dia.';
     const initials=name?name.split(/\s+/).slice(0,2).map(part=>part[0]||'').join('').toUpperCase():'IA';
     const avatar=document.querySelector('.avatar');if(avatar)avatar.textContent=initials;
+    const account=document.querySelector('.account');if(account){const logout=document.createElement('button');logout.type='button';logout.textContent='SAIR';logout.setAttribute('aria-label','Sair da plataforma');logout.style.cssText='border:1px solid #d9e2d8;background:#fff;border-radius:7px;padding:8px 10px;color:#104938;font:800 10px Manrope;cursor:pointer';logout.onclick=async()=>{await client.auth.signOut();location.replace('acesso.html')};account.appendChild(logout)}
     const heading=document.querySelector('#home .heading');
     if(heading&&!document.getElementById('access-start')){
       const band=document.createElement('section');
